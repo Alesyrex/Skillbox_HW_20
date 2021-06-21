@@ -34,6 +34,7 @@ int main() {
 
     std::ofstream bill("C:\\files\\write\\bill.txt", std::ios::app);
     bill << name << " " << dateOfIssue << " " << payAmount << std::endl;
+    bill.close();
 
     return 0;
 }
