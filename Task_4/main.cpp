@@ -3,51 +3,59 @@
 #include <string>
 #include <cstdlib>
 #include <ctime>
-#include <vector>
 
 std::fstream ATM;
 
-void sort_vec (std::vector<int> &vec) {
-    for (int i=0;i < vec.size();i++) {
-        for (int j=0;j < vec.size()-i-1;j++) {
-            if(vec[j+1] > vec[j]) {
-                int temp = vec[j];
-                vec[j] = vec[j+1];
-                vec[j+1] = temp;
+void sort (int *bills) {
+    for (int i=0;i < 1000;i++) {
+        for (int j=0;j < 1000-i-1;j++) {
+            if(bills[j+1] > bills[j]) {
+                int temp = bills[j];
+                bills[j] = bills[j+1];
+                bills[j+1] = temp;
             }
         }
     }
 }
 
-void replenishment_ATM (std::vector<int> &bills) {
+void replenishment_ATM (int *bills) {
     std::srand(std::time(nullptr));
     int temp;
-    ATM.open ("C:\\files\\write\\ATM.bin",std::ios::binary | std::ios::in | std::ios::out);
-    while(!ATM.eof()){
-        ATM.read((char*)&bills, sizeof(bills.size()));
+    ATM.open ("C:\\files\\write\\ATM.bin",std::ios::binary | std::ios::in);
+    for (int i=0;i < 1000;i++) {
+        ATM.read((char *)&bills[i], sizeof(bills[i]));
     }
-    for (int i=0;i < 1000;){
-        temp = rand()%4901 + 100;
-        if (bills[i] == 0 && (temp == 100 || temp == 200 || temp == 500 || temp == 1000
-                                     || temp == 2000 || temp == 5000)) {
-            bills[i] = temp;
-            ATM.write((char*)&bills[i],sizeof(int));
-            i++;
+    ATM.close();
+    for (int i=0;i < 1000;i++){
+        if (bills[i] == 0) {
+            temp = rand() % 6;
+            if (temp == 0) bills[i] = 100;
+            if (temp == 1) bills[i] = 200;
+            if (temp == 2) bills[i] = 500;
+            if (temp == 3) bills[i] = 1000;
+            if (temp == 4) bills[i] = 2000;
+            if (temp == 5) bills[i] = 5000;
         }
     }
-    sort_vec(bills);
+    sort(bills);
+    ATM.open ("C:\\files\\write\\ATM.bin",std::ios::binary | std::ios::out);
     for (int i=0;i < 1000;i++){
-        std::cout << bills[i] << " ";
+        ATM.write((char*)&bills[i],sizeof(bills[i]));
     }
     ATM.close();
 }
 
-void withdraw_cash (std::vector<int> &bills) {
+void withdraw_cash (int *bills) {
     int cash;
     std::cout << "Enter the amount to withdraw:";
     std::cin >> cash;
 
-    sort_vec(bills);
+    ATM.open ("C:\\files\\write\\ATM.bin",std::ios::binary | std::ios::in);
+    for (int i=0;i < 1000;i++) {
+        ATM.read((char *)&bills[i], sizeof(bills[i]));
+    }
+    ATM.close();
+
     for (int i=0;i < 1000;i++){
         if (cash - bills[i] > 0) {
             cash -= bills[i];
@@ -57,22 +65,22 @@ void withdraw_cash (std::vector<int> &bills) {
             cash -= bills[i];
             bills[i] = 0;
             break;
-        } else i++;
+        }
     }
-    ATM.open ("C:\\files\\write\\ATM.bin", std::ios::binary | std::ios::out);
     if (cash > 0) {
         std::cout << "Insufficient funds at the ATM.";
     }
     else{
+        ATM.open ("C:\\files\\write\\ATM.bin",std::ios::binary | std::ios::out);
         for (int i=0;i < 1000;i++) {
-            ATM.write((char*)&bills[i],sizeof(int));
+            ATM.write((char*)&bills[i],sizeof(bills[i]));
         }
         ATM.close();
     }
 }
 
 int main() {
-    std::vector<int> denomination(1000);
+    int denomination [1000] = {0};
     char action;
 
     std::cout << "Input '+' to replenishment ATM or '-' to withdraw cash:";
