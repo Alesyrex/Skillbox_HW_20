@@ -22,10 +22,9 @@ void replenishment_ATM (int *bills) {
     std::srand(std::time(nullptr));
     int temp;
     ATM.open ("C:\\files\\write\\ATM.bin",std::ios::binary | std::ios::in);
-    for (int i=0;i < 1000;i++) {
-        ATM.read((char *)&bills[i], sizeof(bills[i]));
-    }
+    ATM.read((char *)bills, sizeof(bills)*1000);
     ATM.close();
+    std::cout << sizeof (bills);
     for (int i=0;i < 1000;i++){
         if (bills[i] == 0) {
             temp = rand() % 6;
@@ -39,9 +38,7 @@ void replenishment_ATM (int *bills) {
     }
     sort(bills);
     ATM.open ("C:\\files\\write\\ATM.bin",std::ios::binary | std::ios::out);
-    for (int i=0;i < 1000;i++){
-        ATM.write((char*)&bills[i],sizeof(bills[i]));
-    }
+    ATM.write((char*)bills,sizeof(bills)*1000);
     ATM.close();
 }
 
@@ -51,9 +48,7 @@ void withdraw_cash (int *bills) {
     std::cin >> cash;
 
     ATM.open ("C:\\files\\write\\ATM.bin",std::ios::binary | std::ios::in);
-    for (int i=0;i < 1000;i++) {
-        ATM.read((char *)&bills[i], sizeof(bills[i]));
-    }
+    ATM.read((char *)bills, sizeof(bills)*1000);
     ATM.close();
 
     for (int i=0;i < 1000;i++){
@@ -72,9 +67,7 @@ void withdraw_cash (int *bills) {
     }
     else{
         ATM.open ("C:\\files\\write\\ATM.bin",std::ios::binary | std::ios::out);
-        for (int i=0;i < 1000;i++) {
-            ATM.write((char*)&bills[i],sizeof(bills[i]));
-        }
+        ATM.write((char*)bills,sizeof(bills)*1000);
         ATM.close();
     }
 }
